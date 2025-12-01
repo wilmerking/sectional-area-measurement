@@ -1,7 +1,7 @@
 import trimesh
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Button
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import sys
 import glob
 
@@ -149,64 +149,84 @@ def main():
 
     # Plotting Setup
     print("Generating interactive graph...")
-    fig, ax = plt.subplots(figsize=(10, 7))
-    fig.patch.set_facecolor('white')
-    ax.set_facecolor('white')
-    plt.subplots_adjust(bottom=0.2) # Make room for buttons
-
-    # Initial Plot (X Axis)
-    current_axis = 'X'
-    line, = ax.plot(data['X'][0], data['X'][1], linestyle='-', color='#1f77b4')
-    fill = ax.fill_between(data['X'][0], data['X'][1], alpha=0.3, color='#1f77b4')
     
     # Remove .stl extension for display
     display_name = filename.removesuffix('.stl')
     
-    ax.set_title(f'Cross-Sectional Area Distribution - {display_name} ({current_axis} Axis)')
-    ax.set_xlabel(f'Position along {current_axis} Axis ({unit_name})')
-    ax.set_ylabel(f'Area ({unit_name}²)')
-    ax.grid(True, alpha=0.3)
+    # Create figure with buttons
+    fig = go.Figure()
     
-    # Remove all spines
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-
-    # Callback function to update plot
-    def update_plot(axis_name):
-        nonlocal fill
-        # Update data
-        x, y = data[axis_name]
-        line.set_data(x, y)
-        
-        # Remove old fill and create new one
-        fill.remove()
-        fill = ax.fill_between(x, y, alpha=0.3, color='#1f77b4')
-        
-        # Rescale axes
-        ax.relim()
-        ax.autoscale_view()
-        
-        # Update labels
-        ax.set_title(f'Cross-Sectional Area Distribution - {display_name} ({axis_name} Axis)')
-        ax.set_xlabel(f'Position along {axis_name} Axis ({unit_name})')
-        fig.canvas.draw_idle()
-
-    # Create Buttons
-    # Define button positions [left, bottom, width, height]
-    ax_x = plt.axes([0.3, 0.05, 0.1, 0.075])
-    ax_y = plt.axes([0.45, 0.05, 0.1, 0.075])
-    ax_z = plt.axes([0.6, 0.05, 0.1, 0.075])
-
-    btn_x = Button(ax_x, 'X Axis')
-    btn_y = Button(ax_y, 'Y Axis')
-    btn_z = Button(ax_z, 'Z Axis')
-
-    # Connect buttons to callback
-    btn_x.on_clicked(lambda event: update_plot('X'))
-    btn_y.on_clicked(lambda event: update_plot('Y'))
-    btn_z.on_clicked(lambda event: update_plot('Z'))
-
-    plt.show()
+    # Add traces for all three axes (only one visible at a time)
+    for axis_name, (locs, areas) in data.items():
+        fig.add_trace(go.Scatter(
+            x=locs,
+            y=areas,
+            mode='lines',
+            name=f'{axis_name} Axis',
+            line=dict(color='#1f77b4', width=2),
+            fill='tozeroy',
+            fillcolor='rgba(31, 119, 180, 0.3)',
+            visible=(axis_name == 'X'),  # Only X visible initially
+            hovertemplate=f'Position: %{{x:.2f}} {unit_name}<br>Area: %{{y:.2f}} {unit_name}²<extra></extra>'
+        ))
+    
+    # Create buttons for axis selection
+    buttons = []
+    for i, axis_name in enumerate(['X', 'Y', 'Z']):
+        visible = [False, False, False]
+        visible[i] = True
+        buttons.append(dict(
+            label=f'{axis_name} Axis',
+            method='update',
+            args=[
+                {'visible': visible},
+                {
+                    'title': f'Cross-Sectional Area Distribution - {display_name} ({axis_name} Axis)',
+                    'xaxis.title': f'Position along {axis_name} Axis ({unit_name})'
+                }
+            ]
+        ))
+    
+    # Update layout
+    fig.update_layout(
+        title=dict(
+            text=f'Cross-Sectional Area Distribution - {display_name} (X Axis)',
+            font=dict(size=18)
+        ),
+        xaxis=dict(
+            title=f'Position along X Axis ({unit_name})',
+            showgrid=True,
+            gridcolor='rgba(128, 128, 128, 0.2)',
+            showline=False,
+            zeroline=True
+        ),
+        yaxis=dict(
+            title=f'Area ({unit_name}²)',
+            showgrid=True,
+            gridcolor='rgba(128, 128, 128, 0.2)',
+            showline=False,
+            zeroline=True
+        ),
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        hovermode='x unified',
+        updatemenus=[
+            dict(
+                type="buttons",
+                direction="left",
+                buttons=buttons,
+                pad={"r": 10, "t": 10},
+                showactive=True,
+                x=0.5,
+                xanchor="center",
+                y=-0.15,
+                yanchor="top"
+            )
+        ],
+        margin=dict(l=60, r=40, t=80, b=100)
+    )
+    
+    fig.show()
 
 if __name__ == "__main__":
     main()

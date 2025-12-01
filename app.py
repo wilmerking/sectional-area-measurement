@@ -1,7 +1,7 @@
 import streamlit as st
 import trimesh
 import numpy as np
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import tempfile
 import os
 from area_calculator import get_area_distribution
@@ -85,23 +85,63 @@ if uploaded_file is not None:
                     locs, areas = get_area_distribution(mesh, direction, num_slices)
                     
                     with tab:
-                        fig, ax = plt.subplots(figsize=(10, 6))
-                        fig.patch.set_facecolor('white')
-                        ax.set_facecolor('white')
                         # Remove .stl extension for display
                         display_name = uploaded_file.name.removesuffix('.stl')
                         
-                        ax.plot(locs, areas, linestyle='-', color='#1f77b4')
-                        ax.fill_between(locs, areas, alpha=0.3, color='#1f77b4')
-                        ax.set_title(f'Cross-Sectional Area Distribution - {display_name} ({axis_name} Axis)')
-                        ax.set_xlabel(f'Position along {axis_name} Axis ({unit_name})')
-                        ax.set_ylabel(f'Area ({unit_name}²)')
-                        ax.grid(True, alpha=0.3)
+                        # Create plotly figure
+                        fig = go.Figure()
                         
-                        # Remove all spines
-                        for spine in ax.spines.values():
-                            spine.set_visible(False)
-                        st.pyplot(fig)
+                        # Add filled area trace
+                        fig.add_trace(go.Scatter(
+                            x=locs,
+                            y=areas,
+                            mode='lines+markers',
+                            name='Area',
+                            line=dict(color='#1f77b4', width=2),
+                            marker=dict(
+                                size=6,
+                                color='#1f77b4',
+                                opacity=0  # Hidden by default, will show on hover
+                            ),
+                            fill='tozeroy',
+                            fillcolor='rgba(31, 119, 180, 0.3)',
+                            hovertemplate='Position: %{x:.2f} ' + unit_name + '<br>Area: %{y:.2f} ' + unit_name + '²<extra></extra>'
+                        ))
+                        
+                        # Update layout for dark theme with no box
+                        fig.update_layout(
+                            title=dict(
+                                text=f'Cross-Sectional Area Distribution - {display_name} ({axis_name} Axis)',
+                                font=dict(size=16)
+                            ),
+                            xaxis=dict(
+                                title=f'Position along {axis_name} Axis ({unit_name})',
+                                showgrid=True,
+                                gridcolor='rgba(128, 128, 128, 0.2)',
+                                showline=False,
+                                zeroline=True,
+                                showspikes=True,
+                                spikemode='across',
+                                spikesnap='cursor',
+                                spikecolor='rgba(128, 128, 128, 0.5)',
+                                spikethickness=1,
+                                spikedash='solid'
+                            ),
+                            yaxis=dict(
+                                title=f'Area ({unit_name}²)',
+                                showgrid=True,
+                                gridcolor='rgba(128, 128, 128, 0.2)',
+                                showline=False,
+                                zeroline=True
+                            ),
+                            plot_bgcolor='rgba(0,0,0,0)',
+                            paper_bgcolor='rgba(0,0,0,0)',
+                            hovermode='closest',
+                            margin=dict(l=60, r=40, t=60, b=60)
+                        )
+                        
+                        # Display the interactive plot
+                        st.plotly_chart(fig, use_container_width=True)
                 
                 progress_bar.progress((i + 1) / 3)
                 

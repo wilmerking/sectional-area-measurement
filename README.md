@@ -10,7 +10,7 @@ A web-based tool to calculate and visualize the cross-sectional area distributio
 - **Multi-Axis Analysis**: Calculates cross-sectional areas along X, Y, and Z axes
 - **Interactive Tabs**: View graphs for each axis in separate tabs
 - **Customizable Slicing**: Adjust the number of slices for precision vs. speed
-- **Clean Visualization**: Beautiful graphs with proper unit labels
+- **Interactive Visualizations**: Zoom, pan, and hover to explore data with Plotly charts
 
 ## Installation
 
@@ -44,7 +44,7 @@ A web-based tool to calculate and visualize the cross-sectional area distributio
 - `streamlit`
 - `trimesh`
 - `numpy`
-- `matplotlib`
+- `plotly` (for interactive visualizations)
 - `networkx`
 - `rtree`
 - `scipy`
