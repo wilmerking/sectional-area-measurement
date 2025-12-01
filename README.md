@@ -2,6 +2,8 @@
 
 A web-based tool to calculate and visualize the cross-sectional area distribution of STL models along the X, Y, and Z axes.
 
+[Sectional Area Calculator](https://sectional-area-measurement.streamlit.app/)
+
 ## Features
 
 - **Web Interface**: Easy-to-use Streamlit web application
