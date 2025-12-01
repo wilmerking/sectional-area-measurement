@@ -1,0 +1,7 @@
+streamlit==1.51.0
+trimesh==4.10.0
+numpy==2.3.5
+matplotlib==3.10.7
+networkx==3.6
+rtree==1.4.1
+scipy==1.16.3
