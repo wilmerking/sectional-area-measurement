@@ -1,5 +1,5 @@
 streamlit==1.51.0
-trimesh==4.10.0
+trimesh[easy]==4.10.0
 numpy==2.3.5
 matplotlib==3.10.7
 networkx==3.6
