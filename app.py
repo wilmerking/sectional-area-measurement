@@ -47,18 +47,25 @@ if uploaded_file is not None:
         # Configuration
         st.subheader("Configuration")
 
-        source_unit = st.selectbox(
-            "Select original model units:",
-            ("in", "ft", "yd", "mm", "cm", "m"),
-            index=0, # Defaults to 'in' as it's most common for 3D files
-            help="3D files (like STLs) are unitless. Please select the unit used when this file was originally exported."
-        )
+        col1, col2 = st.columns([1, 3])
+        
+        with col1:
+            source_unit = st.selectbox(
+                "Select original model units:",
+                ("in", "ft", "yd", "mm", "cm", "m"),
+                index=0, # Defaults to 'in' as it's most common for 3D files
+                help="3D files (like STLs) are unitless. Please select the unit used when this file was originally exported."
+            )
 
-        unit_name = UNIT_NAMES[source_unit]
-        st.write(f"Processing model in **{unit_name}**...")
+            unit_name = UNIT_NAMES[source_unit]
+            st.write(f"Processing model in **{unit_name}**...")
         
         # Slicing Configuration
-        num_slices = st.slider("Number of Slices", min_value=10, max_value=500, value=100, step=10)
+        col3, col4 = st.columns([1, 3])
+        
+        with col3:
+            num_slices = st.slider("Number of Slices", min_value=10, max_value=500, value=100, step=10,
+                                   help="More slices = smoother graph but slower processing")
         
         if st.button("Calculate Area Distribution"):
             
@@ -81,9 +88,12 @@ if uploaded_file is not None:
                         fig, ax = plt.subplots(figsize=(10, 6))
                         fig.patch.set_facecolor('white')
                         ax.set_facecolor('white')
-                        ax.plot(locs, areas, marker='o', markersize=2, linestyle='-', color='#1f77b4')
+                        # Remove .stl extension for display
+                        display_name = uploaded_file.name.removesuffix('.stl')
+                        
+                        ax.plot(locs, areas, linestyle='-', color='#1f77b4')
                         ax.fill_between(locs, areas, alpha=0.3, color='#1f77b4')
-                        ax.set_title(f'Cross-Sectional Area Distribution: {uploaded_file.name} ({axis_name} Axis)')
+                        ax.set_title(f'Cross-Sectional Area Distribution - {display_name} ({axis_name} Axis)')
                         ax.set_xlabel(f'Position along {axis_name} Axis ({unit_name})')
                         ax.set_ylabel(f'Area ({unit_name}²)')
                         ax.grid(True, alpha=0.3)

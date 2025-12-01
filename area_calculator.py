@@ -13,6 +13,16 @@ import glob
 NUM_SLICES = 100 
 # -----------------------------
 
+# Unit name mapping
+UNIT_NAMES = {
+    "in": "inches",
+    "ft": "feet",
+    "yd": "yards",
+    "mm": "millimeters",
+    "cm": "centimeters",
+    "m": "meters"
+}
+
 def get_area_distribution(mesh, axis_direction, num_slices):
     """
     Calculates the cross-sectional area distribution along a specific axis.
@@ -87,10 +97,32 @@ def get_stl_filename():
             pass
         print("Invalid selection. Please try again.")
 
+def get_unit():
+    """Prompt user to select the unit of measurement."""
+    units = ["in", "ft", "yd", "mm", "cm", "m"]
+    
+    print("\nSelect the unit of measurement:")
+    for i, unit in enumerate(units):
+        print(f"{i+1}: {UNIT_NAMES[unit]} ({unit})")
+    
+    while True:
+        try:
+            selection = int(input("Enter the number (1-6): "))
+            if 1 <= selection <= len(units):
+                selected_unit = units[selection-1]
+                print(f"Selected: {UNIT_NAMES[selected_unit]}\n")
+                return selected_unit
+        except ValueError:
+            pass
+        print("Invalid selection. Please try again.")
+
 def main():
     filename = get_stl_filename()
     if not filename:
         return
+    
+    unit = get_unit()
+    unit_name = UNIT_NAMES[unit]
 
     print(f"Loading {filename}...")
     try:
@@ -124,12 +156,15 @@ def main():
 
     # Initial Plot (X Axis)
     current_axis = 'X'
-    line, = ax.plot(data['X'][0], data['X'][1], marker='o', markersize=2, linestyle='-', color='#1f77b4')
+    line, = ax.plot(data['X'][0], data['X'][1], linestyle='-', color='#1f77b4')
     fill = ax.fill_between(data['X'][0], data['X'][1], alpha=0.3, color='#1f77b4')
     
-    ax.set_title(f'Cross-Sectional Area Distribution: {filename} ({current_axis} Axis)')
-    ax.set_xlabel(f'Position along {current_axis} Axis (units)')
-    ax.set_ylabel('Area (units^2)')
+    # Remove .stl extension for display
+    display_name = filename.removesuffix('.stl')
+    
+    ax.set_title(f'Cross-Sectional Area Distribution - {display_name} ({current_axis} Axis)')
+    ax.set_xlabel(f'Position along {current_axis} Axis ({unit_name})')
+    ax.set_ylabel(f'Area ({unit_name}²)')
     ax.grid(True, alpha=0.3)
     
     # Remove all spines
@@ -152,8 +187,8 @@ def main():
         ax.autoscale_view()
         
         # Update labels
-        ax.set_title(f'Cross-Sectional Area Distribution: {filename} ({axis_name} Axis)')
-        ax.set_xlabel(f'Position along {axis_name} Axis (units)')
+        ax.set_title(f'Cross-Sectional Area Distribution - {display_name} ({axis_name} Axis)')
+        ax.set_xlabel(f'Position along {axis_name} Axis ({unit_name})')
         fig.canvas.draw_idle()
 
     # Create Buttons

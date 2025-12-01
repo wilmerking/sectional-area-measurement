@@ -1,13 +1,16 @@
 # Sectional Area Calculator
 
-A Python tool to calculate and visualize the cross-sectional area distribution of STL models along the X, Y, and Z axes.
+A web-based tool to calculate and visualize the cross-sectional area distribution of STL models along the X, Y, and Z axes.
 
 ## Features
 
-- **Auto-detection**: Automatically finds STL files in the current directory.
-- **Multi-Axis Analysis**: Calculates cross-sectional areas along X, Y, and Z axes.
-- **Interactive Visualization**: View graphs for each axis using a tabbed interface.
-- **Robust Slicing**: Handles complex geometries using `trimesh` and `shapely`/`networkx`.
+- **Web Interface**: Easy-to-use Streamlit web application
+- **File Upload**: Simply drag and drop or browse for your STL file
+- **Unit Selection**: Choose from inches, feet, yards, millimeters, centimeters, or meters
+- **Multi-Axis Analysis**: Calculates cross-sectional areas along X, Y, and Z axes
+- **Interactive Tabs**: View graphs for each axis in separate tabs
+- **Customizable Slicing**: Adjust the number of slices for precision vs. speed
+- **Clean Visualization**: Beautiful graphs with proper unit labels
 
 ## Installation
 
@@ -19,33 +22,29 @@ A Python tool to calculate and visualize the cross-sectional area distribution o
     ```
 3.  **Install dependencies**:
     ```bash
-    pip install trimesh numpy matplotlib networkx rtree scipy
+    pip install -r requirements.txt
     ```
-    *Note: `rtree` is required for accurate polygon calculations.*
 
 ## Usage
 
-### Command Line Interface (CLI)
-1.  Place your STL file in the same directory as the script.
-2.  Run the script:
-    ```bash
-    python3 area_calculator.py
-    ```
-3.  If multiple STL files are found, you will be prompted to select one.
-
-### Web Interface (Streamlit)
-1.  Run the Streamlit app:
+1.  **Run the Streamlit app**:
     ```bash
     streamlit run app.py
     ```
-2.  Upload your STL file in the browser window.
-3.  Adjust the number of slices and click "Calculate Area Distribution".
+2.  **Open your browser** to the URL shown (typically http://localhost:8501)
+3.  **Upload your STL file** using the file uploader
+4.  **Select the original model units** (e.g., inches, millimeters)
+5.  **Adjust the number of slices** (more slices = smoother graph but slower)
+6.  **Click "Calculate Area Distribution"** to generate the graphs
+7.  **Switch between X, Y, and Z axis tabs** to view different orientations
 
 ## Requirements
 
 - Python 3.x
+- `streamlit`
 - `trimesh`
 - `numpy`
 - `matplotlib`
 - `networkx`
 - `rtree`
+- `scipy`
