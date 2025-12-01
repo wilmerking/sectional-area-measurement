@@ -25,13 +25,21 @@ A Python tool to calculate and visualize the cross-sectional area distribution o
 
 ## Usage
 
+### Command Line Interface (CLI)
 1.  Place your STL file in the same directory as the script.
 2.  Run the script:
     ```bash
     python3 area_calculator.py
     ```
 3.  If multiple STL files are found, you will be prompted to select one.
-4.  The script will analyze the geometry and open a window showing the area distribution. Use the buttons at the bottom to switch between X, Y, and Z axes.
+
+### Web Interface (Streamlit)
+1.  Run the Streamlit app:
+    ```bash
+    streamlit run app.py
+    ```
+2.  Upload your STL file in the browser window.
+3.  Adjust the number of slices and click "Calculate Area Distribution".
 
 ## Requirements
 

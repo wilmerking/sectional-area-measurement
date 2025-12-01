@@ -13,5 +13,5 @@ env/
 .idea/
 .DS_Store
 
-# Data files (optional, un-comment if you want to exclude STLs)
-# *.stl
+# Data files
+*.stl
