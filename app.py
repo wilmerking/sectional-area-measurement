@@ -6,6 +6,16 @@ import tempfile
 import os
 from area_calculator import get_area_distribution
 
+# Unit name mapping
+UNIT_NAMES = {
+    "in": "inches",
+    "ft": "feet",
+    "yd": "yards",
+    "mm": "millimeters",
+    "cm": "centimeters",
+    "m": "meters"
+}
+
 st.set_page_config(page_title="Sectional Area Calculator", layout="wide")
 
 st.title("Sectional Area Calculator")
@@ -34,6 +44,19 @@ if uploaded_file is not None:
 
         st.success(f"Successfully loaded {uploaded_file.name}")
         
+        # Configuration
+        st.subheader("Configuration")
+
+        source_unit = st.selectbox(
+            "Select original model units:",
+            ("in", "ft", "yd", "mm", "cm", "m"),
+            index=0, # Defaults to 'in' as it's most common for 3D files
+            help="3D files (like STLs) are unitless. Please select the unit used when this file was originally exported."
+        )
+
+        unit_name = UNIT_NAMES[source_unit]
+        st.write(f"Processing model in **{unit_name}**...")
+        
         # Slicing Configuration
         num_slices = st.slider("Number of Slices", min_value=10, max_value=500, value=100, step=10)
         
@@ -56,12 +79,18 @@ if uploaded_file is not None:
                     
                     with tab:
                         fig, ax = plt.subplots(figsize=(10, 6))
-                        ax.plot(locs, areas, marker='o', markersize=2, linestyle='-')
-                        ax.fill_between(locs, areas, alpha=0.3)
+                        fig.patch.set_facecolor('white')
+                        ax.set_facecolor('white')
+                        ax.plot(locs, areas, marker='o', markersize=2, linestyle='-', color='#1f77b4')
+                        ax.fill_between(locs, areas, alpha=0.3, color='#1f77b4')
                         ax.set_title(f'Cross-Sectional Area Distribution: {uploaded_file.name} ({axis_name} Axis)')
-                        ax.set_xlabel(f'Position along {axis_name} Axis (units)')
-                        ax.set_ylabel('Area (units^2)')
-                        ax.grid(True)
+                        ax.set_xlabel(f'Position along {axis_name} Axis ({unit_name})')
+                        ax.set_ylabel(f'Area ({unit_name}²)')
+                        ax.grid(True, alpha=0.3)
+                        
+                        # Remove all spines
+                        for spine in ax.spines.values():
+                            spine.set_visible(False)
                         st.pyplot(fig)
                 
                 progress_bar.progress((i + 1) / 3)

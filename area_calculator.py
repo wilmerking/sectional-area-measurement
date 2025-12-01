@@ -52,7 +52,10 @@ def get_area_distribution(mesh, axis_direction, num_slices):
         else:
             areas.append(0.0)
             
-    return slice_locations, areas
+    # Shift locations to start at 0 for plotting
+    plot_locations = slice_locations - slice_locations[0]
+            
+    return plot_locations, areas
 
 def get_stl_filename():
     # 1. Check command line arguments
@@ -115,17 +118,23 @@ def main():
     # Plotting Setup
     print("Generating interactive graph...")
     fig, ax = plt.subplots(figsize=(10, 7))
+    fig.patch.set_facecolor('white')
+    ax.set_facecolor('white')
     plt.subplots_adjust(bottom=0.2) # Make room for buttons
 
     # Initial Plot (X Axis)
     current_axis = 'X'
-    line, = ax.plot(data['X'][0], data['X'][1], marker='o', markersize=2, linestyle='-')
-    fill = ax.fill_between(data['X'][0], data['X'][1], alpha=0.3)
+    line, = ax.plot(data['X'][0], data['X'][1], marker='o', markersize=2, linestyle='-', color='#1f77b4')
+    fill = ax.fill_between(data['X'][0], data['X'][1], alpha=0.3, color='#1f77b4')
     
     ax.set_title(f'Cross-Sectional Area Distribution: {filename} ({current_axis} Axis)')
     ax.set_xlabel(f'Position along {current_axis} Axis (units)')
     ax.set_ylabel('Area (units^2)')
-    ax.grid(True)
+    ax.grid(True, alpha=0.3)
+    
+    # Remove all spines
+    for spine in ax.spines.values():
+        spine.set_visible(False)
 
     # Callback function to update plot
     def update_plot(axis_name):
@@ -136,7 +145,7 @@ def main():
         
         # Remove old fill and create new one
         fill.remove()
-        fill = ax.fill_between(x, y, alpha=0.3, color=line.get_color())
+        fill = ax.fill_between(x, y, alpha=0.3, color='#1f77b4')
         
         # Rescale axes
         ax.relim()
